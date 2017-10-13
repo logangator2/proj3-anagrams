@@ -21,7 +21,6 @@ app = flask.Flask(__name__)
 CONFIG = config.configuration()
 app.secret_key = CONFIG.SECRET_KEY  # Should allow using session variables
 
-#
 # One shared 'Vocab' object, read-only after initialization,
 # shared by all threads and instances.  Otherwise we would have to
 # store it in the browser and transmit it on each request/response cycle,
@@ -33,7 +32,6 @@ WORDS = Vocab(CONFIG.VOCAB)
 ###
 # Pages
 ###
-
 
 @app.route("/")
 @app.route("/index")
@@ -51,7 +49,6 @@ def index():
     app.logger.debug("At least one seems to be set correctly")
     return flask.render_template('vocab.html')
 
-
 @app.route("/keep_going")
 def keep_going():
     """
@@ -61,25 +58,20 @@ def keep_going():
     flask.g.vocab = WORDS.as_list()
     return flask.render_template('vocab.html')
 
-
 @app.route("/success")
 def success():
     return flask.render_template('success.html')
 
 #######################
-# Form handler.
-# CIS 322 note:
-#   You'll need to change this to a
-#   a JSON request handler
+# Form handler
 #######################
 
-
-@app.route("/_check", methods=["POST"])
-def check():
+@app.route("/_mycheck")
+def mycheck():
     """
-    User has submitted the form with a word ('attempt')
-    that should be formed from the jumble and on the
-    vocabulary list.  We respond depending on whether
+    My own version of the function check
+    Args: None
+    Effects: A response depending on whether
     the word is on the vocab list (therefore correctly spelled),
     made only from the jumble letters, and not a word they
     already found.
@@ -87,51 +79,10 @@ def check():
     app.logger.debug("Entering check")
 
     # The data we need, from form and from cookie
-    text = flask.request.form["attempt"]
-    jumble = flask.session["jumble"]
-    matches = flask.session.get("matches", [])  # Default to empty list
-
-    # Is it good?
-    in_jumble = LetterBag(jumble).contains(text)
-    matched = WORDS.has(text)
-
-    # Respond appropriately
-    if matched and in_jumble and not (text in matches):
-        # Cool, they found a new word
-        matches.append(text)
-        flask.session["matches"] = matches
-    elif text in matches:
-        flask.flash("You already found {}".format(text))
-    elif not matched:
-        flask.flash("{} isn't in the list of words".format(text))
-    elif not in_jumble:
-        flask.flash(
-            '"{}" can\'t be made from the letters {}'.format(text, jumble))
-    else:
-        app.logger.debug("This case shouldn't happen!")
-        assert False  # Raises AssertionError
-
-        #get rid of below, stay on same page, replace w/ jsonify update in py dict
-    # Choose page:  Solved enough, or keep going?
-    if len(matches) >= flask.session["target_count"]:
-       return flask.redirect(flask.url_for("success"))
-    else:
-       return flask.redirect(flask.url_for("keep_going"))
-
-@app.route("/_mycheck")
-def mycheck():
-    """
-    My own version of the function check
-    Args: None
-    Effects: 
-    """
-    app.logger.debug("Entering check")
-
-    # The data we need, from form and from cookie
     text = flask.request.args.get("text", type=str)
     jumble = flask.session["jumble"]
     matches = flask.session.get("matches", [])  # Default to empty list
-    word_worked = {"word_worked" : False, "is_enough" : False}
+    word_worked = {"word_worked" : False, "is_enough" : False} # JSON variable, default False
 
     # Is it good?
     in_jumble = LetterBag(jumble).contains(text)
@@ -140,9 +91,9 @@ def mycheck():
     # Respond appropriately
     if matched and in_jumble and not (text in matches): # New word
         matches.append(text)
-        flask.session["matches"] = matches
+        flask.session["matches"] = matches # Add word to matches
         word_worked["word_worked"] = True
-        if len(matches) >= CONFIG.SUCCESS_AT_COUNT:
+        if len(matches) >= CONFIG.SUCCESS_AT_COUNT: # Checking if enough matches
             word_worked["is_enough"] = True
             return flask.jsonify(result=word_worked)
         return flask.jsonify(result=word_worked)
@@ -150,33 +101,6 @@ def mycheck():
         app.logger.debug("This case shouldn't happen!")
         assert False  # Raises AssertionError
         return flask.jsonify(result=word_worked)
-
-###############
-# AJAX request handlers
-#   These return JSON, rather than rendering pages.
-###############
-
-@app.route("/_example")
-def example():
-    """
-    Example ajax request handler
-    """
-    app.logger.debug("Got a JSON request")
-    rslt = {"key": "value"}
-    return flask.jsonify(result=rslt)
-
-
-#################
-# Functions used within the templates
-#################
-
-@app.template_filter('filt')
-def format_filt(something):
-    """
-    Example of a filter that can be used within
-    the Jinja2 code
-    """
-    return "Not what you asked for"
 
 ###################
 #   Error handlers
@@ -194,14 +118,10 @@ def error_500(e):
     assert not True  # I want to invoke the debugger
     return flask.render_template('500.html'), 500
 
-
 @app.errorhandler(403)
 def error_403(e):
     app.logger.warning("++ 403 error: {}".format(e))
     return flask.render_template('403.html'), 403
-
-
-####
 
 if __name__ == "__main__":
     if CONFIG.DEBUG:

@@ -6,7 +6,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
 <title>Vocabulary Anagram</title>
 
 <!-- Javascript and Cascading Style Sheets (css) libraries -->
@@ -116,9 +115,7 @@ $("#attempt").keyup(function(event) {
                 if (data.result.is_enough) {
                   console.log(data.result.is_enough)
                   window.location.replace("/success");
-                }
-              }
-            );
+            }});
   });
 </script>
 <br />
@@ -132,7 +129,6 @@ $("#attempt").keyup(function(event) {
 </p>
 {% endif %}
 
-
 <!--Message-maker-->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -142,8 +138,6 @@ $("#attempt").keyup(function(event) {
     {% endfor %}
   {% endif %}
 {% endwith %}
-
-
 
  </div> <!-- container -->
 </body> </html>
