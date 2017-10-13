@@ -131,6 +131,7 @@ def mycheck():
     text = flask.request.args.get("text", type=str)
     jumble = flask.session["jumble"]
     matches = flask.session.get("matches", [])  # Default to empty list
+    word_worked = {"word_worked" : False, "is_enough" : False}
 
     # Is it good?
     in_jumble = LetterBag(jumble).contains(text)
@@ -140,13 +141,14 @@ def mycheck():
     if matched and in_jumble and not (text in matches): # New word
         matches.append(text)
         flask.session["matches"] = matches
-        word_worked = {"word_worked" : True}
-        found = {"matches" : matches}
+        word_worked["word_worked"] = True
+        if len(matches) >= CONFIG.SUCCESS_AT_COUNT:
+            word_worked["is_enough"] = True
+            return flask.jsonify(result=word_worked)
         return flask.jsonify(result=word_worked)
     else:
         app.logger.debug("This case shouldn't happen!")
         assert False  # Raises AssertionError
-        word_worked = {"word_worked" : False}
         return flask.jsonify(result=word_worked)
 
 ###############
@@ -204,7 +206,7 @@ def error_403(e):
 if __name__ == "__main__":
     if CONFIG.DEBUG:
         app.debug = True
-        app.logger.setLevel(logging.DEBUG)
-        app.logger.info(
-            "Opening for global access on port {}".format(CONFIG.PORT))
-        app.run(port=CONFIG.PORT, host="0.0.0.0")
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.info(
+        "Opening for global access on port {}".format(CONFIG.PORT))
+    app.run(port=CONFIG.PORT, host="0.0.0.0")

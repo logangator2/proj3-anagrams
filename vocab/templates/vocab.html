@@ -105,21 +105,18 @@ $("#attempt").keyup(function(event) {
     $.getJSON( "/_mycheck", { text: txt }, 
               function(data) 
               {
-                counter = 0;
-                rsval = data.result.word_worked;
-                console.log("rsval: " + rsval)
-                if (rsval) {
+                if (data.result.word_worked) {
+                  console.log(data.result.word_worked)
                   document.getElementById("response").innerHTML += " " + txt; // Allows found words to show up side by side
                   $("#attempt").val("");
-                  counter += 1;
                 }
                 else {
                   $("#response").append(txt.length + " "); 
                 }
-                //if (counter == 3) {
-                  //display();
-                //}
-
+                if (data.result.is_enough) {
+                  console.log(data.result.is_enough)
+                  window.location.replace("/success");
+                }
               }
             );
   });
