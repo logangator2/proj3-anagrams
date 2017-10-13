@@ -20,5 +20,8 @@ Initial version by M Young; Revised by Maxwell Logan
 
 ## Contact
 
-Maxwell Logan
-mlogan@uoregon.edu
+Maxwell Logan, mlogan@uoregon.edu
+
+## Notes
+
+Based code off of provided minijax code and Piazza posts.
