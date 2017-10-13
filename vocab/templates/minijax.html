@@ -54,13 +54,15 @@
   <form id="entry">
     <label for="attempt">Word:</label>
     <input id="attempt" name="attempt" type="text" width="15"
-      autocomplete="off"  autofocus />
+      autocomplete="off"  autofocus /> <!--text field-->
   </form>
 </div></div>
 
 <p id="response"> </p>  <!-- JavaScript will insert text here -->
 <p id="tiles"> </p> <!-- Illustration of inserting graphics into page -->
 <script>
+
+//TAKE BELOW
 
 // Suppress normal form submission
 $("#entry").submit( function(event) {
@@ -105,6 +107,8 @@ $("#attempt").keyup(function(event) {
            );
    });
 
+//TAKE ABOVE + <"/"script>
+
 // Demonstration of how we can insert graphical elements
 // into a page, possibly building up the URLs of the elements
 // dynamically.  In this case I have a set of Scrabble tiles with
@@ -112,7 +116,7 @@ $("#attempt").keyup(function(event) {
 // generate a URL for each letter.  Browsers should cache the graphics
 // files so that http requests are sent only the first time each
 // element is encountered. 
-//
+
 function showTiles(text) {
    text = text.toUpperCase();  // tiles are letter-A.png, etc.
    tiles_html = "";  // Build up the html text of links

@@ -111,17 +111,48 @@ def check():
         app.logger.debug("This case shouldn't happen!")
         assert False  # Raises AssertionError
 
+        #get rid of below, stay on same page, replace w/ jsonify update in py dict
     # Choose page:  Solved enough, or keep going?
     if len(matches) >= flask.session["target_count"]:
        return flask.redirect(flask.url_for("success"))
     else:
        return flask.redirect(flask.url_for("keep_going"))
 
+@app.route("/_mycheck")
+def mycheck():
+    """
+    My own version of the function check
+    Args: None
+    Effects: 
+    """
+    app.logger.debug("Entering check")
+
+    # The data we need, from form and from cookie
+    text = flask.request.args.get("text", type=str)
+    jumble = flask.session["jumble"]
+    matches = flask.session.get("matches", [])  # Default to empty list
+
+    # Is it good?
+    in_jumble = LetterBag(jumble).contains(text)
+    matched = WORDS.has(text)
+
+    # Respond appropriately
+    if matched and in_jumble and not (text in matches): # New word
+        matches.append(text)
+        flask.session["matches"] = matches
+        word_worked = {"word_worked" : True}
+        found = {"matches" : matches}
+        return flask.jsonify(result=word_worked)
+    else:
+        app.logger.debug("This case shouldn't happen!")
+        assert False  # Raises AssertionError
+        word_worked = {"word_worked" : False}
+        return flask.jsonify(result=word_worked)
+
 ###############
 # AJAX request handlers
 #   These return JSON, rather than rendering pages.
 ###############
-
 
 @app.route("/_example")
 def example():
@@ -148,7 +179,6 @@ def format_filt(something):
 ###################
 #   Error handlers
 ###################
-
 
 @app.errorhandler(404)
 def error_404(e):

@@ -48,7 +48,7 @@
       <h1>Words</h1>
     </div>
   </div>
-<!-- Vocabularly words layed out in 6 columns;
+<!-- Vocabulary words layed out in 6 columns;
   -- bootstrap may collapse to fewer columns and
   -- more rows if the window is narrow.
   -->
@@ -77,6 +77,7 @@
     to spell {{session.target_count}} words from the list.
   </div> <!-- col -->
 </div> <!-- row -->
+
 <br />
 <div class="row">
   <div class="col-xs-6 text-center">
@@ -84,10 +85,45 @@
     <label for="attempt">Word:</label>
     <input id="attempt" name="attempt" type="text" width="15"
       autocomplete="off"  autofocus />
-    <input type="submit" name="try" />
   </form>
 </div></div>
+<p id="response"> </p>  <!-- JavaScript will insert text here -->
+<script>
+// Suppress normal form submission
 
+$("#attempt").keyup(function(event) {
+   var txt = $("#attempt").val();  // Current content of the input field
+   var keycode = event.which;      // The key that just went up
+   var letter = String.fromCharCode(keycode);
+
+   $("#entry").submit( function(event) {
+   event.preventDefault();
+    });
+
+  if (! "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(letter)) { return }
+
+    $.getJSON( "/_mycheck", { text: txt }, 
+              function(data) 
+              {
+                counter = 0;
+                rsval = data.result.word_worked;
+                console.log("rsval: " + rsval)
+                if (rsval) {
+                  document.getElementById("response").innerHTML += " " + txt; // Allows found words to show up side by side
+                  $("#attempt").val("");
+                  counter += 1;
+                }
+                else {
+                  $("#response").append(txt.length + " "); 
+                }
+                //if (counter == 3) {
+                  //display();
+                //}
+
+              }
+            );
+  });
+</script>
 <br />
 
 {% if session.matches|length is not equalto 0  %}
@@ -100,6 +136,7 @@
 {% endif %}
 
 
+<!--Message-maker-->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <!-- Mismatch, already found, etc. "flashed" from Python -->
