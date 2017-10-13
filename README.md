@@ -16,38 +16,9 @@ have different anagrams.
 
 ## Authors 
 
-Initial version by M Young; to be revised by CIS 322 students. 
+Initial version by M Young; Revised by Maxwell Logan
 
-## Known bugs
+## Contact
 
-The start/stop scheme is not working.  Flask (or perhaps the virtual
-environment) is creating two Unix processes running the application,
-and I am capturing the process ID for only one of them.  Therefore
-stop.sh manages to kill only one, leaving the other running.  At this
-time I do not know a workaround.  It is necessary to kill the second
-process manually.  Use 'ps | grep python' to discover it, then 'kill'
-to kill it.  Or, on Linux systems, use the 'killall' command. 
-
-## Status
-
-flask_vocab.py and the template vocab.html are a 'skeleton' version 
-of the anagram game for a CIS 322 project.  They uses conventional  
-interaction through a form, interacting only when the user submits the form. 
-Your assignment is to replace the interaction with AJAX interaction on each 
-keystroke. 
-
-## Minijax? 
-
-flask_minijax.py and templates/minijax.html are a tiny example of using JQuery 
-with flask for an Ajax application.  They should not be included in the
-version of the project you turn in. 
-
-
-## To run automated tests 
-* `nosetests`
-
-There are currently nose tests for vocab.py, letterbag.py, and jumble.py. 
-
-'make test' should work.  To run 'nosetests' explicitly, you must be
-in the 'vocab' subdirectory. 
-
+Maxwell Logan
+mlogan@uoregon.edu
